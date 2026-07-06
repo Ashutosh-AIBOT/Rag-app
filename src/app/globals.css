@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-zinc-800;
+  }
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply bg-zinc-950 text-zinc-50 antialiased;
+  }
+  ::selection {
+    @apply bg-indigo-500/30 text-indigo-200;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-indigo-500/50 ring-offset-2 ring-offset-zinc-950;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl shadow-black/20;
+  }
+  .card-hover {
+    @apply bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl shadow-black/20 hover:border-zinc-700 hover:shadow-2xl transition-all duration-200;
+  }
+  .btn-primary {
+    @apply px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/10 active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply px-4 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50 transition-all duration-150;
+  }
+  .btn-danger {
+    @apply px-4 py-2.5 rounded-lg text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition-all duration-150;
+  }
+  .input-field {
+    @apply w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-150;
+  }
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider;
+  }
+  .badge-green {
+    @apply badge bg-emerald-500/10 border border-emerald-500/20 text-emerald-400;
+  }
+  .badge-amber {
+    @apply badge bg-amber-500/10 border border-amber-500/20 text-amber-400;
+  }
+  .badge-rose {
+    @apply badge bg-rose-500/10 border border-rose-500/20 text-rose-400;
+  }
+  .badge-indigo {
+    @apply badge bg-indigo-500/10 border border-indigo-500/20 text-indigo-400;
+  }
+  .label {
+    @apply block text-[10px] font-bold uppercase tracking-wider text-zinc-500;
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation: animate-in 0.3s ease-out;
+  }
+  @keyframes animate-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .skeleton {
+    @apply animate-pulse bg-zinc-800/50 rounded;
+  }
+}
