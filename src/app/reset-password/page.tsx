@@ -1,11 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import Spinner from "@/components/ui/Spinner";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const { resetPassword } = useAuth();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
@@ -68,5 +68,17 @@ export default function ResetPasswordPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <Spinner size="h-8 w-8" />
+      </div>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
