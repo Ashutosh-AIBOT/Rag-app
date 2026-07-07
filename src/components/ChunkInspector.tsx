@@ -31,10 +31,11 @@ function ScoreGrid({ c }: { c: ChunkScore }) {
     { label: "Rerank", value: c.rerank_score, extra: true },
     { label: "Initial Rank", value: c.original_rank, raw: true },
     { label: "Final Rank", value: c.final_rank, raw: true },
+    { label: "Tokens", value: c.token_count, raw: true },
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
       {scores.map(({ label, value, raw }) => (
         <div key={label} className="bg-zinc-900 border border-zinc-850 p-2.5 rounded-lg">
           <div className="label">{label}</div>
@@ -132,6 +133,7 @@ export default function ChunkInspector({
                     <Badge variant="default">{c.section}</Badge>
                   )}
                   <Badge variant="indigo">{c.strategy}</Badge>
+                  {c.token_count != null && <Badge variant="default">{c.token_count} tok</Badge>}
                   {isOverlap && <Badge variant="amber">Shared</Badge>}
                 </div>
                 <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">{c.text}</p>

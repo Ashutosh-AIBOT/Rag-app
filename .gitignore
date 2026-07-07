@@ -5,3 +5,5 @@ out/
 tsconfig.tsbuildinfo
 .DS_Store
 *.log
+.vercel
+.env*

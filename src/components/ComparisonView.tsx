@@ -2,6 +2,7 @@
 import { QueryResponse } from "@/lib/api";
 import AnswerDisplay from "./AnswerDisplay";
 import ChunkInspector from "./ChunkInspector";
+import PipelineVisualizer from "./PipelineVisualizer";
 import ReactDiffViewer from "react-diff-viewer";
 
 function MetricsTable({ resultA, resultB, overlapIds }: { resultA: QueryResponse; resultB: QueryResponse; overlapIds: string[] }) {
@@ -93,6 +94,34 @@ export default function ComparisonView({
           />
         </div>
       </div>
+
+      {(resultA.pipeline?.length > 0 || resultB.pipeline?.length > 0) && (
+        <div className="card p-6 space-y-4">
+          <h3 className="label">Pipeline Trace Comparison</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-indigo-500" />
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                  A — {resultA.strategy.replace(/_/g, " ")}
+                </span>
+                <span className="text-[10px] text-zinc-500 font-mono ml-auto">{resultA.latency_ms.toFixed(0)} ms</span>
+              </div>
+              <PipelineVisualizer steps={resultA.pipeline || []} />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-violet-500" />
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                  B — {resultB.strategy.replace(/_/g, " ")}
+                </span>
+                <span className="text-[10px] text-zinc-500 font-mono ml-auto">{resultB.latency_ms.toFixed(0)} ms</span>
+              </div>
+              <PipelineVisualizer steps={resultB.pipeline || []} />
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-4">

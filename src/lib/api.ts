@@ -51,6 +51,7 @@ export interface ChunkScore {
   original_rank?: number;
   final_rank?: number;
   child_text?: string;
+  token_count?: number;
 }
 
 export interface PipelineStep {
@@ -287,8 +288,7 @@ export const api = {
   },
 
   async stats() {
-    // Public endpoint — no auth required
-    return j<any>(await fetch(`${API_URL}/api/stats`));
+    return j<any>(await apiFetch(`${API_URL}/api/stats`));
   },
 
   async getQueryPipeline(queryId: string) {
@@ -320,63 +320,154 @@ export async function streamQuery(
   handlers: {
     onChunks?: (chunks: ChunkScore[]) => void;
     onToken?: (token: string) => void;
-    onDone?: (info: { query_id: string; input_tokens?: number; output_tokens?: number }) => void;
+    onDone?: (info: { query_id: string; input_tokens?: number; output_tokens?: number; latency_ms?: number }) => void;
     onError?: (err: Error) => void;
   }
 ) {
-  console.info(`[API] streamQuery: Starting stream. Strategy=${payload.strategy}, Query="${payload.query}"`);
+  console.info(`[API] streamQuery: Starting stream request. Strategy=${payload.strategy}, Query="${payload.query}"`);
   try {
+    console.info(`[API] streamQuery: Sending POST request to ${API_URL}/api/query/stream`);
     const res = await apiFetch(`${API_URL}/api/query/stream`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filters: {}, ...payload }),
     });
+
+    console.info(`[API] streamQuery: Response received. Status=${res.status}, StatusText=${res.statusText}, OK=${res.ok}`);
     if (!res.ok || !res.body) {
       const errMsg = `API error ${res.status}: ${await res.text()}`;
-      console.error("[API] streamQuery: Connection failed:", errMsg);
+      console.error("[API] streamQuery: Connection failed or empty body:", errMsg);
       throw new Error(errMsg);
     }
 
+    console.info("[API] streamQuery: ReadableStream is present. Getting reader...");
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
 
+    console.info("[API] streamQuery: Starting stream consumption loop.");
     while (true) {
       const { done, value } = await reader.read();
+      console.debug(`[API] streamQuery: reader.read() => done=${done}, valueBytes=${value ? value.length : 0}`);
+
       if (done) {
+        console.info("[API] streamQuery: Stream reader reached EOF (done=true). Flushing remaining buffer...");
+        if (buffer.trim()) {
+          console.info("[API] streamQuery: Buffer contains unflushed data:", JSON.stringify(buffer));
+          let event = "message";
+          const dataLines: string[] = [];
+          for (const line of buffer.split("\n")) {
+            if (line.startsWith("event:")) event = line.slice(6).trim();
+            else if (line.startsWith("data:")) {
+              let val = line.slice(5);
+              if (val.startsWith(" ")) val = val.slice(1);
+              dataLines.push(val.replace(/\r$/, ""));
+            }
+          }
+          const data = dataLines.join("\n");
+          console.info(`[API] streamQuery: Flushed event='${event}' with data length=${data.length}`);
+          if (event === "chunks") {
+            try { 
+              const parsed = JSON.parse(data);
+              console.info(`[API] streamQuery: Triggering onChunks (flush) with ${parsed.length} items`);
+              handlers.onChunks?.(parsed); 
+            } catch (err) {
+              console.error("[API] streamQuery: Failed to parse chunks on flush:", err, "Data:", data);
+            }
+          } else if (event === "token") {
+            console.debug(`[API] streamQuery: Triggering onToken (flush) with: ${JSON.stringify(data)}`);
+            handlers.onToken?.(data);
+          } else if (event === "done") {
+            try { 
+              const parsed = JSON.parse(data);
+              console.info(`[API] streamQuery: Triggering onDone (flush) with:`, parsed);
+              if (parsed.error || parsed.query_id === "error") {
+                handlers.onError?.(new Error(parsed.error || "Retrieval/Generation error"));
+              } else {
+                handlers.onDone?.(parsed); 
+              }
+            } catch (err) {
+              console.error("[API] streamQuery: Failed to parse done info on flush:", err, "Data:", data);
+            }
+          }
+        } else {
+          console.info("[API] streamQuery: Buffer was empty on EOF.");
+        }
         console.info("[API] streamQuery: Stream socket closed by remote host.");
         break;
       }
-      buffer += decoder.decode(value, { stream: true });
 
-      let sepIndex;
-      while ((sepIndex = buffer.indexOf("\n\n")) !== -1) {
-        const rawEvent = buffer.slice(0, sepIndex);
-        buffer = buffer.slice(sepIndex + 2);
+      const decodedChunk = decoder.decode(value, { stream: true });
+      buffer += decodedChunk;
+      console.debug(`[API] streamQuery: Decoded chunk text segment length=${decodedChunk.length}, total buffer length=${buffer.length}`);
+
+      while (true) {
+        const sepIndex = buffer.indexOf("\n\n");
+        const rSepIndex = buffer.indexOf("\r\n\r\n");
+        
+        let foundIndex = -1;
+        let sepLength = 0;
+        
+        if (sepIndex !== -1 && (rSepIndex === -1 || sepIndex < rSepIndex)) {
+          foundIndex = sepIndex;
+          sepLength = 2;
+        } else if (rSepIndex !== -1) {
+          foundIndex = rSepIndex;
+          sepLength = 4;
+        }
+        
+        if (foundIndex === -1) {
+          break;
+        }
+
+        const rawEvent = buffer.slice(0, foundIndex);
+        buffer = buffer.slice(foundIndex + sepLength);
+        console.debug(`[API] streamQuery: Found SSE double-newline boundary. Event block length=${rawEvent.length}`);
 
         let event = "message";
         const dataLines: string[] = [];
         for (const line of rawEvent.split("\n")) {
-          if (line.startsWith("event:")) event = line.slice(6).trim();
-          else if (line.startsWith("data:")) dataLines.push(line.slice(5).trim());
+          if (line.startsWith("event:")) {
+            event = line.slice(6).trim();
+          } else if (line.startsWith("data:")) {
+            let val = line.slice(5);
+            if (val.startsWith(" ")) val = val.slice(1);
+            dataLines.push(val.replace(/\r$/, ""));
+          }
         }
         const data = dataLines.join("\n");
+        console.debug(`[API] streamQuery: Parsed SSE event='${event}', data length=${data.length}`);
 
         if (event === "chunks") {
-          const parsed = JSON.parse(data);
-          console.info(`[API] streamQuery: Received chunks metadata. Count=${parsed.length}`);
-          handlers.onChunks?.(parsed);
+          try {
+            const parsed = JSON.parse(data);
+            console.info(`[API] streamQuery: Received chunks metadata. Count=${parsed.length}`);
+            handlers.onChunks?.(parsed);
+          } catch (err) {
+            console.error("[API] streamQuery: JSON parse error for chunks event:", err, "Data:", data);
+          }
         } else if (event === "token") {
+          console.debug(`[API] streamQuery: Received token: ${JSON.stringify(data)}`);
           handlers.onToken?.(data);
         } else if (event === "done") {
-          const parsed = JSON.parse(data);
-          console.info(`[API] streamQuery: Done. QueryID=${parsed.query_id}, InputTokens=${parsed.input_tokens}, OutputTokens=${parsed.output_tokens}`);
-          handlers.onDone?.(parsed);
+          try {
+            const parsed = JSON.parse(data);
+            console.info(`[API] streamQuery: Received done event. QueryID=${parsed.query_id}, InputTokens=${parsed.input_tokens}, OutputTokens=${parsed.output_tokens}`);
+            if (parsed.error || parsed.query_id === "error") {
+              handlers.onError?.(new Error(parsed.error || "Retrieval/Generation error"));
+            } else {
+              handlers.onDone?.(parsed);
+            }
+          } catch (err) {
+            console.error("[API] streamQuery: JSON parse error for done event:", err, "Data:", data);
+          }
+        } else {
+          console.warn(`[API] streamQuery: Unknown event type parsed: '${event}'`);
         }
       }
     }
   } catch (err) {
-    console.error("[API] streamQuery: Exception caught:", err);
+    console.error("[API] streamQuery: Critical exception caught in streamQuery:", err);
     const errorObj = err instanceof Error ? err : new Error(String(err));
     handlers.onError?.(errorObj);
     throw errorObj;

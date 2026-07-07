@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { QueryResponse } from "@/lib/api";
 import { useAppStore } from "@/lib/store";
@@ -33,6 +34,7 @@ const markdownComponents = {
 export default function AnswerDisplay({ result }: { result: QueryResponse | null }) {
   const setHighlightSource = useAppStore((s) => s.setHighlightSource);
   const highlightSource = useAppStore((s) => s.highlightSource);
+  const [showTokenBreakdown, setShowTokenBreakdown] = useState(false);
 
   if (!result) {
     return (
@@ -114,6 +116,57 @@ export default function AnswerDisplay({ result }: { result: QueryResponse | null
           </span>
         )}
       </div>
+
+      {(() => {
+        const contextStep = result.pipeline?.find((s) => s.name === "context_assembly");
+        const perSourceTokens = contextStep?.detail?.per_source_tokens;
+        if (!perSourceTokens || !Array.isArray(perSourceTokens) || perSourceTokens.length === 0) return null;
+        const totalContextTokens = perSourceTokens.reduce((sum: number, t: any) => sum + (t.tokens || 0), 0);
+        return (
+          <div className="border-t border-zinc-800 pt-4">
+            <button
+              onClick={() => setShowTokenBreakdown(!showTokenBreakdown)}
+              className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-400 hover:text-zinc-200 transition-colors"
+            >
+              <svg className={`h-3 w-3 transition-transform ${showTokenBreakdown ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+              Context Token Breakdown ({totalContextTokens} tokens)
+            </button>
+            {showTokenBreakdown && (
+              <div className="mt-3 space-y-2">
+                {perSourceTokens.map((t: any, i: number) => {
+                  const pct = totalContextTokens > 0 ? (t.tokens / totalContextTokens) * 100 : 0;
+                  return (
+                    <div key={i} className="flex items-center gap-3 text-xs">
+                      <span className="font-mono text-zinc-400 w-40 truncate shrink-0" title={t.source}>{t.source}</span>
+                      {t.page && <span className="text-zinc-500 shrink-0">p.{t.page}</span>}
+                      <div className="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-500/70 rounded-full" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="font-mono text-zinc-300 w-16 text-right shrink-0">{t.tokens} tok</span>
+                      <span className="text-zinc-500 w-12 text-right shrink-0">{pct.toFixed(0)}%</span>
+                    </div>
+                  );
+                })}
+                <div className="flex items-center gap-3 text-xs font-semibold border-t border-zinc-800 pt-2">
+                  <span className="text-zinc-400 w-40 shrink-0">Total Context</span>
+                  <span className="flex-1" />
+                  <span className="font-mono text-zinc-200 w-16 text-right shrink-0">{totalContextTokens} tok</span>
+                </div>
+                <div className="flex items-center gap-3 text-xs">
+                  <span className="text-zinc-400 w-40 shrink-0">+ Query Tokens</span>
+                  <span className="flex-1" />
+                  <span className="font-mono text-zinc-300 w-16 text-right shrink-0">{result.input_tokens - totalContextTokens} tok</span>
+                </div>
+                <div className="flex items-center gap-3 text-xs font-semibold border-t border-zinc-800 pt-2">
+                  <span className="text-zinc-400 w-40 shrink-0">= Total Input</span>
+                  <span className="flex-1" />
+                  <span className="font-mono text-zinc-200 w-16 text-right shrink-0">{result.input_tokens} tok</span>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }

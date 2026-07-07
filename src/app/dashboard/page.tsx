@@ -4,6 +4,7 @@ import QueryPanel from "@/components/QueryPanel";
 import AnswerDisplay from "@/components/AnswerDisplay";
 import ChunkInspector from "@/components/ChunkInspector";
 import PipelineVisualizer from "@/components/PipelineVisualizer";
+import RetrievalDebugger from "@/components/RetrievalDebugger";
 import Spinner from "@/components/ui/Spinner";
 import { QueryResponse, api } from "@/lib/api";
 import { useAppStore } from "@/lib/store";
@@ -96,6 +97,9 @@ export default function DashboardPage() {
               <PipelineVisualizer steps={result?.pipeline || []} />
             )}
           </div>
+          {result && result.chunks.length > 0 && !loading && (
+            <RetrievalDebugger result={result} />
+          )}
         </div>
 
         <div className="space-y-3">

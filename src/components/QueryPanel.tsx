@@ -169,7 +169,9 @@ export default function QueryPanel({
 
         let pipeline: QueryResponse["pipeline"] = [];
         if (queryId) {
-          try { const p = await api.getQueryPipeline(queryId); pipeline = p.pipeline; } catch {}
+          try { const p = await api.getQueryPipeline(queryId); pipeline = p.pipeline; } catch (e) {
+            console.warn("[QueryPanel] Failed to fetch pipeline trace:", e);
+          }
         }
 
         const latencyMs = Math.round(performance.now() - start);
