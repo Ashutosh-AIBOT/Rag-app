@@ -248,7 +248,7 @@ export const api = {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ filters: {}, ...payload }),
-        }, 60000)
+        }, 300000)
       );
       console.info(`[API] query: Received response successfully. Latency=${res.latency_ms}ms, Chunks=${res.chunks.length}`);
       return res;
