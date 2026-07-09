@@ -272,7 +272,7 @@ export const api = {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ filters: {}, score_quality: true, ...payload }),
-        }, 60000)
+        }, 300000)
       );
       console.info(`[API] compare: Received comparison. LatencyA=${res.result_a.latency_ms}ms, LatencyB=${res.result_b.latency_ms}ms, OverlapChunks=${res.overlap_chunk_ids.length}`);
       return res;

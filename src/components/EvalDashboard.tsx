@@ -121,7 +121,51 @@ export default function EvalDashboard() {
     }
   };
 
-  useEffect(() => { loadBatches(); }, []);
+  const resumePolling = useCallback(async (jobId: string, bId: string) => {
+    setLoading(true); setError(null); setResults([]); setSummary(null);
+    setBatchId(bId);
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("active_eval_job_id", jobId);
+        localStorage.setItem("active_eval_batch_id", bId);
+      }
+      const finalJob = await pollJob(() => api.getEvalJob(jobId), (job) => setProgress({ done: job.completed_steps, total: job.total_steps }));
+      if (finalJob.status === "failed") { 
+        setError(finalJob.error || "Evaluation job failed."); 
+      } else {
+        setSummary(finalJob.summary); 
+        setResultsLoading(true);
+        try { 
+          setResults(await api.evalResults(bId)); 
+          await loadBatches(); 
+          setSelectedBatchId(bId); 
+        } finally { 
+          setResultsLoading(false); 
+        }
+      }
+    } catch (e: any) { 
+      setError(e.message); 
+    } finally { 
+      setLoading(false); 
+      setProgress(null);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("active_eval_job_id");
+        localStorage.removeItem("active_eval_batch_id");
+      }
+    }
+  }, []);
+
+  useEffect(() => { 
+    loadBatches(); 
+    // Check if there is an active running job saved in localStorage
+    if (typeof window !== "undefined") {
+      const savedJobId = localStorage.getItem("active_eval_job_id");
+      const savedBatchId = localStorage.getItem("active_eval_batch_id");
+      if (savedJobId && savedBatchId) {
+        resumePolling(savedJobId, savedBatchId);
+      }
+    }
+  }, [resumePolling]);
 
   const handleSelectBatch = async (bid: string) => {
     setSelectedBatchId(bid);
@@ -139,15 +183,11 @@ export default function EvalDashboard() {
     setLoading(true); setError(null); setProgress(null); setResults([]);
     try {
       const { job_id, batch_id } = await api.evaluateBatch(selected, limit, useRagas);
-      setBatchId(batch_id);
-      const finalJob = await pollJob(() => api.getEvalJob(job_id), (job) => setProgress({ done: job.completed_steps, total: job.total_steps }));
-      if (finalJob.status === "failed") { setError(finalJob.error || "Evaluation job failed."); }
-      else {
-        setSummary(finalJob.summary); setResultsLoading(true);
-        try { setResults(await api.evalResults(batch_id)); await loadBatches(); setSelectedBatchId(batch_id); }
-        finally { setResultsLoading(false); }
-      }
-    } catch (e: any) { setError(e.message); } finally { setLoading(false); }
+      await resumePolling(job_id, batch_id);
+    } catch (e: any) { 
+      setError(e.message); 
+      setLoading(false); 
+    }
   };
 
   const chartData = summary ? Object.entries(summary).map(([strategy, scores]) => ({ strategy: strategy.replace(/_/g, " ").toUpperCase(), ...scores })) : [];
