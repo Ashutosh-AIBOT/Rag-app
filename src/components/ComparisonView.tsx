@@ -25,10 +25,10 @@ function MetricsTable({ resultA, resultB, overlapIds }: { resultA: QueryResponse
         <thead>
           <tr className="bg-zinc-950/20 text-zinc-400 border-b border-zinc-800 font-semibold">
             <th className="px-5 py-3">Metric</th>
-            <th className="px-5 py-3 uppercase tracking-wider text-indigo-400 font-mono text-[10px]">
+            <th className="px-5 py-3 uppercase tracking-wider text-gold-400 font-mono text-[10px]">
               A: {resultA.strategy.replace(/_/g, " ")}
             </th>
-            <th className="px-5 py-3 uppercase tracking-wider text-violet-400 font-mono text-[10px]">
+            <th className="px-5 py-3 uppercase tracking-wider text-emerald-400 font-mono text-[10px]">
               B: {resultB.strategy.replace(/_/g, " ")}
             </th>
           </tr>
@@ -101,7 +101,7 @@ export default function ComparisonView({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-indigo-500" />
+                <span className="h-2 w-2 rounded-full bg-gold-500" />
                 <span className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                   A — {resultA.strategy.replace(/_/g, " ")}
                 </span>
@@ -111,7 +111,7 @@ export default function ComparisonView({
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-violet-500" />
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
                 <span className="text-xs font-bold uppercase tracking-wider text-zinc-300">
                   B — {resultB.strategy.replace(/_/g, " ")}
                 </span>
@@ -126,7 +126,7 @@ export default function ComparisonView({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-4">
           <div className="flex items-center gap-2 border-b border-zinc-800 pb-2">
-            <span className="h-2 w-2 rounded-full bg-indigo-500 shadow-md shadow-indigo-500/50" />
+            <span className="h-2 w-2 rounded-full bg-gold-500 shadow-md shadow-gold-500/50" />
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
               Strategy A — {resultA.strategy.replace(/_/g, " ")}
             </h3>
@@ -140,7 +140,7 @@ export default function ComparisonView({
 
         <div className="space-y-4">
           <div className="flex items-center gap-2 border-b border-zinc-800 pb-2">
-            <span className="h-2 w-2 rounded-full bg-violet-500 shadow-md shadow-violet-500/50" />
+            <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/50" />
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
               Strategy B — {resultB.strategy.replace(/_/g, " ")}
             </h3>

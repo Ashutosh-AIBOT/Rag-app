@@ -27,7 +27,7 @@ export default function MetadataFilters({
         <div className="flex items-center gap-2">
           <span>Metadata Filters</span>
           {activeCount > 0 && (
-            <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/25 rounded-full">
+            <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold text-gold-400 bg-gold-500/10 border border-gold-500/25 rounded-full">
               {activeCount} active
             </span>
           )}
@@ -93,7 +93,7 @@ export default function MetadataFilters({
                   onClick={() => set({ filter_logic: op })}
                   className={`flex-1 py-1 rounded text-[10px] uppercase font-bold tracking-wider transition-all ${
                     (filters.filter_logic || "and") === op
-                      ? "bg-indigo-600 text-white shadow-sm"
+                      ? "bg-gold-600 text-white shadow-sm"
                       : "text-zinc-500 hover:text-zinc-300"
                   }`}
                 >

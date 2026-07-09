@@ -25,15 +25,15 @@ function UploadProgress({ uploads }: { uploads: ActiveUpload[] }) {
           const isFailed = u.status === "failed";
           const isDone = u.status === "done";
           return (
-            <div key={u.jobId} className="bg-zinc-950 border border-zinc-850 rounded-lg p-4 text-xs space-y-2">
+            <div key={u.jobId} className="bg-zinc-950 border border-zinc-800/70 rounded-lg p-4 text-xs space-y-2">
               <div className="flex justify-between items-center">
                 <span className="font-semibold text-zinc-200 truncate max-w-[70%]">{u.filename}</span>
                 <span className={`font-mono font-bold text-[10px] uppercase ${isFailed ? "text-rose-400" : isDone ? "text-emerald-400" : "text-amber-400"}`}>
                   {isFailed ? "Failed" : isDone ? "Ready" : `${u.progress}%`}
                 </span>
               </div>
-              <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden border border-zinc-850">
-                <div className={`h-full transition-all duration-300 ${isFailed ? "bg-rose-500" : isDone ? "bg-emerald-500" : "bg-indigo-500"}`} style={{ width: `${isFailed ? 100 : u.progress}%` }} />
+              <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800/70">
+                <div className={`h-full transition-all duration-300 ${isFailed ? "bg-rose-500" : isDone ? "bg-emerald-500" : "bg-gold-500"}`} style={{ width: `${isFailed ? 100 : u.progress}%` }} />
               </div>
               <div className="text-[10px] text-zinc-500 truncate">{u.error ?? u.message}</div>
             </div>
@@ -75,11 +75,11 @@ function DocCard({
   const statusVariant = doc.status === "ready" ? "green" : doc.status === "failed" ? "rose" : "amber";
 
   return (
-    <div className={`border rounded-xl bg-zinc-900 overflow-hidden transition-all duration-200 ${isSelected ? "border-indigo-500/50 shadow-md shadow-indigo-500/5" : "border-zinc-800"}`}>
+    <div className={`border rounded-xl bg-zinc-900 overflow-hidden transition-all duration-200 ${isSelected ? "border-gold-500/50 shadow-md shadow-gold-500/5" : "border-zinc-800"}`}>
       <div className="flex items-center justify-between px-5 py-4 hover:bg-zinc-950/10 transition-colors">
         <div className="flex items-center gap-4 flex-1 min-w-0">
           {isReady && (
-            <input type="checkbox" checked={isSelected} onChange={onToggleSelect} className="w-4 h-4 rounded text-indigo-600 bg-zinc-950 border-zinc-850 focus:ring-indigo-500/50 cursor-pointer shrink-0" />
+            <input type="checkbox" checked={isSelected} onChange={onToggleSelect} className="w-4 h-4 rounded text-gold-600 bg-zinc-950 border-zinc-800/70 focus:ring-gold-500/50 cursor-pointer shrink-0" />
           )}
           <button className="text-left flex-1 min-w-0" onClick={onToggleExpand}>
             <div className="flex items-center gap-2.5">
@@ -87,11 +87,11 @@ function DocCard({
               <Badge variant={statusVariant}>{doc.status}</Badge>
             </div>
             <div className="text-xs text-zinc-500 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="bg-zinc-950 px-2 py-0.5 rounded border border-zinc-850 font-mono text-[10px] text-zinc-400">{doc.file_type.toUpperCase()}</span>
+              <span className="bg-zinc-950 px-2 py-0.5 rounded border border-zinc-800/70 font-mono text-[10px] text-zinc-400">{doc.file_type.toUpperCase()}</span>
               <span>{doc.total_pages} page(s)</span>
               <span>{(doc.file_size / 1024).toFixed(1)} KB</span>
               <span>{new Date(doc.upload_date).toLocaleDateString()}</span>
-              {doc.tags.length > 0 && <span className="text-indigo-400/90 font-medium">tags: {doc.tags.join(", ")}</span>}
+              {doc.tags.length > 0 && <span className="text-gold-400/90 font-medium">tags: {doc.tags.join(", ")}</span>}
             </div>
           </button>
         </div>
@@ -101,12 +101,12 @@ function DocCard({
       </div>
 
       {isExpanded && (
-        <div className="px-5 pb-5 border-t border-zinc-850 bg-zinc-950/40 pt-4 space-y-4">
+        <div className="px-5 pb-5 border-t border-zinc-800/70 bg-zinc-950/40 pt-4 space-y-4">
           <div className="space-y-2">
             <div className="label">Chunk Count Breakdown</div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {Object.entries(doc.chunk_counts).map(([strategy, count]) => (
-                <div key={strategy} className="bg-zinc-900 border border-zinc-850 rounded-lg p-3">
+                <div key={strategy} className="bg-zinc-900 border border-zinc-800/70 rounded-lg p-3">
                   <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-500 truncate">{strategy.replace(/_/g, " ")}</div>
                   <div className="font-mono text-lg font-bold text-zinc-200 mt-1">{count}</div>
                 </div>
@@ -118,7 +118,7 @@ function DocCard({
             {(["chunks", "overlap"] as const).map((tab) => {
               const active = (drawerTab[doc.id] ?? "chunks") === tab;
               return (
-                <button key={tab} onClick={() => setDrawerTab((cur) => ({ ...cur, [doc.id]: tab }))} className={`text-[10px] font-bold uppercase tracking-wider px-4 py-2 border-b-2 transition-all ${active ? "border-indigo-500 text-indigo-400" : "border-transparent text-zinc-500 hover:text-zinc-300"}`}>
+                <button key={tab} onClick={() => setDrawerTab((cur) => ({ ...cur, [doc.id]: tab }))} className={`text-[10px] font-bold uppercase tracking-wider px-4 py-2 border-b-2 transition-all ${active ? "border-gold-500 text-gold-400" : "border-transparent text-zinc-500 hover:text-zinc-300"}`}>
                   {tab === "chunks" ? "Chunk Browser" : "Overlap Map"}
                 </button>
               );
@@ -127,20 +127,20 @@ function DocCard({
 
           {(drawerTab[doc.id] ?? "chunks") === "chunks" && (
             <div className="space-y-2.5">
-              <div className="label">Chunk Browser {chunksLoading === doc.id && <span className="animate-pulse text-indigo-400 lowercase ml-1">Loading...</span>}</div>
+              <div className="label">Chunk Browser {chunksLoading === doc.id && <span className="animate-pulse text-gold-400 lowercase ml-1">Loading...</span>}</div>
               {chunksByDoc[doc.id] && (
                 <div className="space-y-3">
                   <div className="flex gap-2 flex-wrap">
                     {Object.keys(chunksByDoc[doc.id].by_strategy).map((strategy) => (
-                      <button key={strategy} onClick={() => setActiveStrategyTab((cur) => ({ ...cur, [doc.id]: strategy }))} className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border transition-all ${activeStrategyTab[doc.id] === strategy ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-500/15" : "bg-zinc-900 border-zinc-850 text-zinc-400 hover:text-zinc-200"}`}>
+                      <button key={strategy} onClick={() => setActiveStrategyTab((cur) => ({ ...cur, [doc.id]: strategy }))} className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border transition-all ${activeStrategyTab[doc.id] === strategy ? "bg-gold-600 border-gold-500 text-white shadow-md shadow-gold-500/15" : "bg-zinc-900 border-zinc-800/70 text-zinc-400 hover:text-zinc-200"}`}>
                         {strategy.replace(/_/g, " ")} ({chunksByDoc[doc.id].by_strategy[strategy].length})
                       </button>
                     ))}
                   </div>
                   <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
                     {(chunksByDoc[doc.id].by_strategy[activeStrategyTab[doc.id]] || []).map((c) => (
-                      <div key={c.chunk_id} className="bg-zinc-900 border border-zinc-850 rounded-lg p-3 text-xs space-y-1.5">
-                        <div className="flex items-center justify-between text-[10px] text-zinc-500 border-b border-zinc-850 pb-1.5 font-mono">
+                      <div key={c.chunk_id} className="bg-zinc-900 border border-zinc-800/70 rounded-lg p-3 text-xs space-y-1.5">
+                        <div className="flex items-center justify-between text-[10px] text-zinc-500 border-b border-zinc-800/70 pb-1.5 font-mono">
                           <span>{c.page ? `Page ${c.page}` : "Meta"}</span>
                           {c.section && <span className="truncate max-w-[200px]">{c.section}</span>}
                         </div>
@@ -164,6 +164,7 @@ function DocCard({
 
 export default function DocumentList() {
   const [docs, setDocs] = useState<DocumentOut[]>([]);
+  const [docsLoading, setDocsLoading] = useState(true);
   const [tags, setTags] = useState("");
   const [uploads, setUploads] = useState<Record<string, ActiveUpload>>({});
   const [error, setError] = useState<string | null>(null);
@@ -179,9 +180,11 @@ export default function DocumentList() {
 
   const refresh = () => api.listDocuments().then((data) => {
     setDocs(data);
-    if (!isInitialized.current && data.length > 0) {
+    setDocsLoading(false);
+    if (!isInitialized.current && selectedSources.length === 0 && data.length > 0) {
       const ready = data.filter((d) => d.status === "ready").map((d) => d.filename);
-      if (ready.length > 0) { setSelectedSources(ready); isInitialized.current = true; }
+      if (ready.length > 0) { setSelectedSources(ready); }
+      isInitialized.current = true;
     }
   }).catch(() => {});
 
@@ -262,14 +265,18 @@ export default function DocumentList() {
           {docs.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-zinc-400 mr-2">Active: <strong>{selectedSources.length}</strong> / {docs.filter((d) => d.status === "ready").length}</span>
-              <button onClick={() => setSelectedSources(docs.filter((d) => d.status === "ready").map((d) => d.filename))} className="text-[10px] font-semibold text-zinc-300 bg-zinc-950 border border-zinc-850 hover:border-zinc-700 px-2.5 py-1.5 rounded-lg transition">Select All</button>
-              <button onClick={() => setSelectedSources([])} className="text-[10px] font-semibold text-zinc-300 bg-zinc-950 border border-zinc-850 hover:border-zinc-700 px-2.5 py-1.5 rounded-lg transition">Deselect All</button>
+              <button onClick={() => setSelectedSources(docs.filter((d) => d.status === "ready").map((d) => d.filename))} className="text-[10px] font-semibold text-zinc-300 bg-zinc-950 border border-zinc-800/70 hover:border-zinc-700 px-2.5 py-1.5 rounded-lg transition">Select All</button>
+              <button onClick={() => setSelectedSources([])} className="text-[10px] font-semibold text-zinc-300 bg-zinc-950 border border-zinc-800/70 hover:border-zinc-700 px-2.5 py-1.5 rounded-lg transition">Deselect All</button>
             </div>
           )}
         </div>
-        {docs.length === 0 && (
+        {docsLoading ? (
+          <div className="border border-zinc-800 rounded-xl bg-zinc-900/50 backdrop-blur-md p-8 text-zinc-500 text-sm text-center flex items-center justify-center gap-2">
+            <Spinner size="h-4 w-4" /> Loading documents...
+          </div>
+        ) : docs.length === 0 ? (
           <div className="border border-zinc-800 rounded-xl bg-zinc-900/50 backdrop-blur-md p-8 text-zinc-500 text-sm text-center">No indexed documents found. Upload text assets to begin.</div>
-        )}
+        ) : null}
         <div className="space-y-3">
           {docs.map((doc) => (
             <DocCard

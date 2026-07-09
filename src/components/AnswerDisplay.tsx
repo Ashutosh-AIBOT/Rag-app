@@ -21,13 +21,13 @@ const markdownComponents = {
   ol: ({ children }: any) => <ol className="list-decimal pl-5 mb-4 space-y-1.5 text-zinc-300 text-sm">{children}</ol>,
   li: ({ children }: any) => <li className="leading-relaxed">{children}</li>,
   code: ({ children }: any) => (
-    <code className="bg-zinc-950 text-indigo-300 font-mono text-xs px-1.5 py-0.5 rounded border border-zinc-800/80">{children}</code>
+    <code className="bg-zinc-950 text-gold-300 font-mono text-xs px-1.5 py-0.5 rounded border border-zinc-800/80">{children}</code>
   ),
   pre: ({ children }: any) => (
     <pre className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 font-mono text-xs overflow-x-auto text-zinc-300 mb-4 leading-relaxed">{children}</pre>
   ),
   a: ({ href, children }: any) => (
-    <a href={href} className="text-indigo-400 hover:text-indigo-300 underline underline-offset-4 transition" target="_blank" rel="noreferrer">{children}</a>
+    <a href={href} className="text-gold-400 hover:text-gold-300 underline underline-offset-4 transition" target="_blank" rel="noreferrer">{children}</a>
   ),
 };
 
@@ -53,7 +53,7 @@ export default function AnswerDisplay({ result }: { result: QueryResponse | null
     <div className="card p-6 space-y-6">
       <div className="flex items-center justify-between text-xs text-zinc-400 border-b border-zinc-800 pb-3">
         <span className="flex items-center gap-1.5">
-          Strategy: <Badge variant="indigo">{result.strategy.replace(/_/g, " ")}</Badge>
+          Strategy: <Badge variant="gold">{result.strategy.replace(/_/g, " ")}</Badge>
         </span>
         <div className="flex items-center gap-3">
           <CopyButton text={result.answer} />
@@ -78,7 +78,7 @@ export default function AnswerDisplay({ result }: { result: QueryResponse | null
                 onClick={() => setHighlightSource(active ? null : s)}
                 className={`text-[11px] font-mono px-2.5 py-1 rounded-md border transition-all ${
                   active
-                    ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-500/15"
+                    ? "bg-gold-600 border-gold-500 text-white shadow-md shadow-gold-500/15"
                     : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
                 }`}
               >
@@ -112,7 +112,7 @@ export default function AnswerDisplay({ result }: { result: QueryResponse | null
         <span className="flex items-center gap-1">Chunks: <span className="font-mono text-zinc-300">{result.chunks.length}</span></span>
         {!!result.estimated_cost_usd && (
           <span className="flex items-center gap-1 ml-auto">
-            Est. Cost: <span className="font-mono text-zinc-300 text-indigo-400 normal-case">${result.estimated_cost_usd.toFixed(6)}</span>
+            Est. Cost: <span className="font-mono text-zinc-300 text-gold-400 normal-case">${result.estimated_cost_usd.toFixed(6)}</span>
           </span>
         )}
       </div>
@@ -140,7 +140,7 @@ export default function AnswerDisplay({ result }: { result: QueryResponse | null
                       <span className="font-mono text-zinc-400 w-40 truncate shrink-0" title={t.source}>{t.source}</span>
                       {t.page && <span className="text-zinc-500 shrink-0">p.{t.page}</span>}
                       <div className="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-indigo-500/70 rounded-full" style={{ width: `${pct}%` }} />
+                        <div className="h-full bg-gold-500/70 rounded-full" style={{ width: `${pct}%` }} />
                       </div>
                       <span className="font-mono text-zinc-300 w-16 text-right shrink-0">{t.tokens} tok</span>
                       <span className="text-zinc-500 w-12 text-right shrink-0">{pct.toFixed(0)}%</span>

@@ -49,7 +49,7 @@ function exportToCsv(results: any[], batchId: string) {
 function ChartView({ chartData, batchId }: { chartData: any[]; batchId: string }) {
   return (
     <div className="lg:col-span-2 card p-6 space-y-4">
-      <div className="flex items-center justify-between border-b border-zinc-850 pb-3">
+      <div className="flex items-center justify-between border-b border-zinc-800/70 pb-3">
         <h3 className="label">Comparative Metrics</h3>
         <span className="text-[10px] text-zinc-500 font-mono">Batch ID: {batchId.slice(0, 8)}</span>
       </div>
@@ -70,10 +70,10 @@ function ChartView({ chartData, batchId }: { chartData: any[]; batchId: string }
 }
 
 function Leaderboard({ leaderboard }: { leaderboard: { strategy: string; average: number }[] }) {
-  const gradients = ["from-emerald-500 to-teal-500", "from-indigo-500 to-violet-500", "from-zinc-500 to-zinc-650"];
+  const gradients = ["from-emerald-500 to-teal-500", "from-gold-500 to-emerald-500", "from-zinc-500 to-zinc-600"];
   return (
     <div className="card p-6 space-y-4">
-      <div className="border-b border-zinc-850 pb-3">
+      <div className="border-b border-zinc-800/70 pb-3">
         <h3 className="label">Leaderboard</h3>
       </div>
       <div className="space-y-4">
@@ -86,7 +86,7 @@ function Leaderboard({ leaderboard }: { leaderboard: { strategy: string; average
               </div>
               <span className="font-mono font-bold text-zinc-100">{row.average.toFixed(2)}</span>
             </div>
-            <div className="w-full bg-zinc-950 h-2 rounded-full overflow-hidden border border-zinc-850">
+            <div className="w-full bg-zinc-950 h-2 rounded-full overflow-hidden border border-zinc-800/70">
               <div className={`h-full bg-gradient-to-r ${gradients[Math.min(i, 2)]} rounded-full`} style={{ width: `${row.average * 100}%` }} />
             </div>
           </div>
@@ -183,7 +183,7 @@ export default function EvalDashboard() {
           <label className="label">Select Retrieval Strategies</label>
           <div className="flex flex-wrap gap-2">
             {ALL_STRATEGIES.map((s) => (
-              <button key={s} onClick={() => toggle(s)} className={`text-xs px-3.5 py-1.5 rounded-full border transition-all duration-200 ${selected.includes(s) ? "bg-indigo-500/10 border-indigo-500/80 text-indigo-400 font-medium" : "bg-zinc-950 border-zinc-850 text-zinc-400 hover:text-zinc-200 hover:border-zinc-750"}`}>
+              <button key={s} onClick={() => toggle(s)} className={`text-xs px-3.5 py-1.5 rounded-full border transition-all duration-200 ${selected.includes(s) ? "bg-gold-500/10 border-gold-500/80 text-gold-400 font-medium" : "bg-zinc-950 border-zinc-800/70 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600"}`}>
                 {s.replace(/_/g, " ").toUpperCase()}
               </button>
             ))}
@@ -197,7 +197,7 @@ export default function EvalDashboard() {
               <input type="number" value={limit} onChange={(e) => setLimit(Number(e.target.value))} className="w-24 input-field" />
             </div>
             <label className="flex items-center gap-2.5 text-xs text-zinc-300 cursor-pointer select-none self-end pb-2">
-              <input type="checkbox" checked={useRagas} onChange={(e) => setUseRagas(e.target.checked)} className="w-4 h-4 rounded text-indigo-600 bg-zinc-900 border-zinc-700 focus:ring-indigo-500/50 focus:ring-offset-zinc-950" />
+              <input type="checkbox" checked={useRagas} onChange={(e) => setUseRagas(e.target.checked)} className="w-4 h-4 rounded text-gold-600 bg-zinc-900 border-zinc-700 focus:ring-gold-500/50 focus:ring-offset-zinc-950" />
               <span>Compute RAGAS Metrics</span>
             </label>
           </div>
@@ -212,8 +212,8 @@ export default function EvalDashboard() {
               <span>Job Progress</span>
               <span className="font-mono">{progress.done} / {progress.total} iterations</span>
             </div>
-            <div className="w-full h-2 bg-zinc-950 rounded-full overflow-hidden border border-zinc-805">
-              <div className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-300" style={{ width: `${progress.total ? (100 * progress.done) / progress.total : 0}%` }} />
+            <div className="w-full h-2 bg-zinc-950 rounded-full overflow-hidden border border-zinc-800">
+              <div className="h-full bg-gradient-to-r from-gold-500 to-emerald-500 transition-all duration-300" style={{ width: `${progress.total ? (100 * progress.done) / progress.total : 0}%` }} />
             </div>
           </div>
         )}
@@ -231,11 +231,11 @@ export default function EvalDashboard() {
         <div className="card overflow-hidden">
           <div className="px-5 py-4 border-b border-zinc-800 bg-zinc-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <h3 className="label">
-              Iterative Evaluation Logs {resultsLoading && <span className="animate-pulse text-indigo-400 text-[10px] ml-2 lowercase">Updating...</span>}
+              Iterative Evaluation Logs {resultsLoading && <span className="animate-pulse text-gold-400 text-[10px] ml-2 lowercase">Updating...</span>}
             </h3>
             <div className="flex items-center gap-3">
               <label className="flex items-center gap-2 text-xs text-zinc-400 hover:text-zinc-200 cursor-pointer select-none">
-                <input type="checkbox" checked={failuresOnly} onChange={(e) => setFailuresOnly(e.target.checked)} className="w-3.5 h-3.5 rounded text-indigo-600 bg-zinc-950 border-zinc-800 focus:ring-indigo-500/50" />
+                <input type="checkbox" checked={failuresOnly} onChange={(e) => setFailuresOnly(e.target.checked)} className="w-3.5 h-3.5 rounded text-gold-600 bg-zinc-950 border-zinc-800 focus:ring-gold-500/50" />
                 <span>Show Failures Only</span>
               </label>
               {results.length > 0 && (
@@ -281,7 +281,7 @@ export default function EvalDashboard() {
                           </span>
                         </td>
                         <td className="px-5 py-3.5 text-right">
-                          <button onClick={() => setExpandedResult(isOpen ? null : r.id)} className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition">
+                          <button onClick={() => setExpandedResult(isOpen ? null : r.id)} className="text-xs text-gold-400 hover:text-gold-300 font-semibold transition">
                             {isOpen ? "Collapse" : "Inspect Trace"}
                           </button>
                         </td>
@@ -292,21 +292,21 @@ export default function EvalDashboard() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div className="space-y-1.5">
                                 <div className="label">Generated Answer</div>
-                                <div className="bg-zinc-900 border border-zinc-850 rounded-lg p-4 font-mono text-[11px] text-zinc-300 whitespace-pre-wrap leading-relaxed shadow-inner">{r.generated_answer}</div>
+                                <div className="bg-zinc-900 border border-zinc-800/70 rounded-lg p-4 font-mono text-[11px] text-zinc-300 whitespace-pre-wrap leading-relaxed shadow-inner">{r.generated_answer}</div>
                               </div>
                               <div className="space-y-1.5">
                                 <div className="label">Reference Answer</div>
-                                <div className="bg-zinc-900 border border-zinc-850 rounded-lg p-4 font-mono text-[11px] text-zinc-400 whitespace-pre-wrap leading-relaxed shadow-inner">{r.reference_answer}</div>
+                                <div className="bg-zinc-900 border border-zinc-800/70 rounded-lg p-4 font-mono text-[11px] text-zinc-400 whitespace-pre-wrap leading-relaxed shadow-inner">{r.reference_answer}</div>
                               </div>
                             </div>
                             {r.trace?.pipeline && (
                               <div className="space-y-2">
                                 <div className="label">Pipeline Trace</div>
-                                <div className="bg-zinc-900/40 border border-zinc-850 rounded-lg p-4 space-y-2 text-xs">
+                                <div className="bg-zinc-900/40 border border-zinc-800/70 rounded-lg p-4 space-y-2 text-xs">
                                   {r.trace.pipeline.map((step: any, idx: number) => (
                                     <div key={idx} className="flex gap-4 items-start font-mono leading-relaxed">
-                                      <span className="text-indigo-400 font-bold shrink-0 min-w-[120px] uppercase text-[10px] tracking-wider">{step.name}:</span>
-                                      <span className="text-zinc-450 truncate" title={JSON.stringify(step.detail)}>{JSON.stringify(step.detail)}</span>
+                                      <span className="text-gold-400 font-bold shrink-0 min-w-[120px] uppercase text-[10px] tracking-wider">{step.name}:</span>
+                                      <span className="text-zinc-400 truncate" title={JSON.stringify(step.detail)}>{JSON.stringify(step.detail)}</span>
                                     </div>
                                   ))}
                                 </div>

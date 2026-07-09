@@ -12,7 +12,7 @@ export default function Toggle({
   return (
     <label className="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-950/40 hover:bg-zinc-950/80 cursor-pointer transition select-none">
       <div
-        className={`relative w-9 h-5 rounded-full transition-colors ${checked ? "bg-indigo-500" : "bg-zinc-700"}`}
+        className={`relative w-9 h-5 rounded-full transition-colors ${checked ? "bg-gold-500" : "bg-zinc-700"}`}
         onClick={(e) => {
           e.preventDefault();
           onChange(!checked);

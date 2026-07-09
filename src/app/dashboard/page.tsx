@@ -68,10 +68,10 @@ export default function DashboardPage() {
                   setPrefill({ query: h.query, strategy: h.strategy, filters: h.filters || {} });
                   setShowHistory(false);
                 }}
-                className="w-full text-left text-xs bg-zinc-950/40 hover:bg-zinc-950/80 border border-zinc-850 hover:border-zinc-700 rounded-lg p-3 flex items-center justify-between gap-4 transition-all"
+                className="w-full text-left text-xs bg-zinc-950/40 hover:bg-zinc-950/80 border border-zinc-800/70 hover:border-zinc-700 rounded-lg p-3 flex items-center justify-between gap-4 transition-all"
               >
                 <span className="truncate text-zinc-300 font-medium flex-1">{h.query}</span>
-                <span className="badge-indigo">{h.strategy.replace(/_/g, " ")}</span>
+                <span className="badge-gold">{h.strategy.replace(/_/g, " ")}</span>
                 <span className="text-zinc-500 font-mono text-[10px] shrink-0">{h.latency_ms.toFixed(0)}ms</span>
               </button>
             ))}

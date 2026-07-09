@@ -10,18 +10,38 @@ function getToken(): string | null {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
-/** Build Authorization header object if a token exists. */
-function authHeader(): Record<string, string> {
-  const token = getToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
-/** Authenticated fetch — merges auth header into every request. */
-async function apiFetch(input: string, init: RequestInit = {}): Promise<Response> {
+/** Authenticated fetch — merges auth header, timeout, and 401 handling. */
+async function apiFetch(input: string, init: RequestInit = {}, timeoutMs = 30000): Promise<Response> {
   const headers = new Headers(init.headers);
   const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  return fetch(input, { ...init, headers });
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(input, { ...init, headers, signal: controller.signal });
+    if (res.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("rag_token");
+      document.cookie = "token=; path=/; max-age=0";
+      window.location.href = "/login?expired=1";
+      throw new Error("Session expired");
+    }
+    return res;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/** Public fetch with timeout only (no auth, no 401 redirect). */
+async function publicFetch(input: string, init: RequestInit = {}, timeoutMs = 10000): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -175,7 +195,7 @@ async function j<T>(res: Response): Promise<T> {
 export const api = {
   async listStrategies() {
     // Public endpoint — no auth required
-    return j<{ id: string; description: string }[]>(await fetch(`${API_URL}/api/strategies`));
+    return j<{ id: string; description: string }[]>(await publicFetch(`${API_URL}/api/strategies`));
   },
 
   async listDocuments() {
@@ -228,7 +248,7 @@ export const api = {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ filters: {}, ...payload }),
-        })
+        }, 60000)
       );
       console.info(`[API] query: Received response successfully. Latency=${res.latency_ms}ms, Chunks=${res.chunks.length}`);
       return res;
@@ -252,7 +272,7 @@ export const api = {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ filters: {}, score_quality: true, ...payload }),
-        })
+        }, 60000)
       );
       console.info(`[API] compare: Received comparison. LatencyA=${res.result_a.latency_ms}ms, LatencyB=${res.result_b.latency_ms}ms, OverlapChunks=${res.overlap_chunk_ids.length}`);
       return res;
@@ -268,7 +288,7 @@ export const api = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ strategies, limit, use_ragas: !!useRagas }),
-      })
+      }, 120000)
     );
   },
 
@@ -299,7 +319,88 @@ export const api = {
 
   async health() {
     // Public endpoint — no auth required
-    return j<any>(await fetch(`${API_URL}/api/health`));
+    return j<any>(await publicFetch(`${API_URL}/api/health`));
+  },
+
+  async verifyOtp(email: string, otp: string) {
+    return j<{ message: string }>(
+      await publicFetch(`${API_URL}/api/auth/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      })
+    );
+  },
+
+  async compareEmbeddings(payload: { text: string; model_a: string; model_b: string }) {
+    return j<any>(
+      await apiFetch(`${API_URL}/api/embeddings/compare`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+    );
+  },
+
+  async me() {
+    return j<any>(await apiFetch(`${API_URL}/api/auth/me`));
+  },
+
+  async login(email: string, password: string) {
+    const res = await apiFetch(`${API_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: "Login failed" }));
+      throw new Error(err.detail || "Login failed");
+    }
+    return res.json();
+  },
+
+  async register(email: string, password: string, full_name: string) {
+    const res = await apiFetch(`${API_URL}/api/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, full_name }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: "Registration failed" }));
+      throw new Error(err.detail || "Registration failed");
+    }
+  },
+
+  async logout() {
+    await apiFetch(`${API_URL}/api/auth/logout`, { method: "POST" });
+  },
+
+  async forgotPassword(email: string) {
+    const res = await apiFetch(`${API_URL}/api/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    if (!res.ok) throw new Error("Failed to send reset email");
+    return res.json();
+  },
+
+  async resetPassword(token: string, newPassword: string) {
+    const res = await apiFetch(`${API_URL}/api/auth/reset-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, new_password: newPassword }),
+    });
+    if (!res.ok) throw new Error("Password reset failed");
+  },
+
+  async changePassword(currentPassword: string, newPassword: string) {
+    const res = await apiFetch(`${API_URL}/api/auth/change-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+    });
+    if (!res.ok) throw new Error("Password change failed");
   },
 };
 
@@ -331,7 +432,7 @@ export async function streamQuery(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filters: {}, ...payload }),
-    });
+    }, 60000);
 
     console.info(`[API] streamQuery: Response received. Status=${res.status}, StatusText=${res.statusText}, OK=${res.ok}`);
     if (!res.ok || !res.body) {
@@ -493,6 +594,11 @@ export async function pollJob<T extends { status: string }>(
         return job;
       }
     } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      if (errMsg.includes("API error 4")) {
+        console.error("[API] pollJob: Permanent error received. Stopping poll.", err);
+        throw err;
+      }
       console.warn("[API] pollJob: Retrying job status poll due to connection/network drop...", err);
     }
     await new Promise((r) => setTimeout(r, intervalMs));

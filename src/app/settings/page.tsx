@@ -27,11 +27,11 @@ export default function SettingsPage() {
               </div>
               <div className="flex justify-between py-2 border-b border-zinc-800">
                 <span className="text-zinc-400">Role</span>
-                <span className="badge-indigo">{user.is_admin ? "Admin" : "User"}</span>
+                <span className="badge-gold">{user.is_admin ? "Admin" : "User"}</span>
               </div>
             </div>
           ) : (
-            <p className="text-xs text-zinc-500">Not signed in. <Link href="/login" className="text-indigo-400 hover:text-indigo-300">Sign in</Link></p>
+            <p className="text-xs text-zinc-500">Not signed in. <Link href="/login" className="text-gold-400 hover:text-gold-300">Sign in</Link></p>
           )}
         </div>
 

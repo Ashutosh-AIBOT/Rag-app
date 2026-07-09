@@ -17,8 +17,8 @@ function isScoreKey(key: string): boolean {
 function scoreColorClass(value: any): string {
   if (typeof value !== "number") return "text-zinc-300";
   const v = value >= 0 && value <= 1 ? value : Math.min(1, Math.max(0, (value + 5) / 10));
-  if (v >= 0.66) return "text-emerald-400";
-  if (v >= 0.33) return "text-amber-400";
+  if (v >= 0.75) return "text-emerald-400";
+  if (v >= 0.5) return "text-amber-400";
   return "text-rose-400";
 }
 
@@ -30,7 +30,7 @@ function getStepStatus(detail: Record<string, any>): { dotClass: string; textCla
       total += s; count++;
     }
   }
-  if (count === 0) return { dotClass: "bg-zinc-900 border-zinc-800", textClass: "text-indigo-400", glowClass: "" };
+  if (count === 0) return { dotClass: "bg-zinc-900 border-zinc-800", textClass: "text-gold-400", glowClass: "" };
   const avg = total / count;
   if (avg >= 0.75) return { dotClass: "bg-emerald-500/10 border-emerald-500/30", textClass: "text-emerald-400", glowClass: "shadow-emerald-500/20" };
   if (avg >= 0.5) return { dotClass: "bg-amber-500/10 border-amber-500/30", textClass: "text-amber-400", glowClass: "shadow-amber-500/20" };
@@ -54,10 +54,10 @@ function PromptPreview({ prompt }: { prompt: string }) {
     <div className="space-y-4 mt-2">
       {systemMsg && (
         <div className="border border-zinc-800/85 rounded-lg overflow-hidden bg-zinc-950/70 shadow-inner">
-          <div className="bg-indigo-500/10 px-3 py-1.5 border-b border-zinc-800 text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
+          <div className="bg-gold-500/10 px-3 py-1.5 border-b border-zinc-800 text-[10px] font-bold text-gold-400 uppercase tracking-wider">
             System Instructions
           </div>
-          <div className="p-3 text-zinc-350 font-mono text-[11px] whitespace-pre-wrap leading-relaxed">{systemMsg}</div>
+          <div className="p-3 text-zinc-400 font-mono text-[11px] whitespace-pre-wrap leading-relaxed">{systemMsg}</div>
         </div>
       )}
       {contextSection && (
@@ -65,7 +65,7 @@ function PromptPreview({ prompt }: { prompt: string }) {
           <div className="bg-emerald-500/10 px-3 py-1.5 border-b border-zinc-800 text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
             Assembled Context (Context Window)
           </div>
-          <div className="p-3 text-zinc-350 font-mono text-[11px] whitespace-pre-wrap leading-relaxed max-h-80 overflow-y-auto">{contextSection}</div>
+          <div className="p-3 text-zinc-400 font-mono text-[11px] whitespace-pre-wrap leading-relaxed max-h-80 overflow-y-auto">{contextSection}</div>
         </div>
       )}
       {humanMsg && (
@@ -73,7 +73,7 @@ function PromptPreview({ prompt }: { prompt: string }) {
           <div className="bg-amber-500/10 px-3 py-1.5 border-b border-zinc-800 text-[10px] font-bold text-amber-400 uppercase tracking-wider">
             User Query Statement
           </div>
-          <div className="p-3 text-zinc-350 font-mono text-[11px] whitespace-pre-wrap leading-relaxed">{humanMsg}</div>
+          <div className="p-3 text-zinc-400 font-mono text-[11px] whitespace-pre-wrap leading-relaxed">{humanMsg}</div>
         </div>
       )}
     </div>
@@ -121,7 +121,7 @@ function StepCard({ step, index, isOpen, onToggle, animDelay }: { step: Pipeline
             {step.name.replaceAll("_", " ")}
           </span>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-zinc-500 font-mono bg-zinc-950 px-2 py-0.5 rounded border border-zinc-850">
+            <span className="text-xs text-zinc-500 font-mono bg-zinc-950 px-2 py-0.5 rounded border border-zinc-800/70">
               {step.duration_ms.toFixed(1)} ms
             </span>
             <svg className={`h-4 w-4 text-zinc-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,7 +131,7 @@ function StepCard({ step, index, isOpen, onToggle, animDelay }: { step: Pipeline
         </button>
 
         {isOpen && (
-          <div className="px-5 pb-5 border-t border-zinc-850 bg-zinc-950/40 pt-4 text-xs space-y-3">
+          <div className="px-5 pb-5 border-t border-zinc-800/70 bg-zinc-950/40 pt-4 text-xs space-y-3">
             {Object.entries(step.detail || {}).map(([k, v]) => {
               const isScore = isScoreKey(k);
               const valueStr = renderDetailValue(v);
@@ -149,7 +149,7 @@ function StepCard({ step, index, isOpen, onToggle, animDelay }: { step: Pipeline
                 <div key={k} className="space-y-1">
                   <div className="label">{k}</div>
                   {typeof v === "object" && v !== null ? (
-                    <div className="rounded-lg overflow-hidden border border-zinc-850 shadow-inner">
+                    <div className="rounded-lg overflow-hidden border border-zinc-800/70 shadow-inner">
                       <SyntaxHighlighter language="json" style={vscDarkPlus} customStyle={{ margin: 0, padding: "12px", fontSize: "11px", background: "#09090b" }}>
                         {valueStr}
                       </SyntaxHighlighter>

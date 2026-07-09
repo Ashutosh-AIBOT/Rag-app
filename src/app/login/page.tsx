@@ -1,11 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import Spinner from "@/components/ui/Spinner";
 
-export default function LoginPage() {
+function LoginContent() {
   const { login } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,7 +21,7 @@ export default function LoginPage() {
     setError("");
     try {
       await login(email, password);
-      window.location.href = "/dashboard";
+      router.push(redirectTo);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -51,10 +55,22 @@ export default function LoginPage() {
         </form>
 
         <div className="text-center text-xs text-zinc-500 space-y-2">
-          <Link href="/forgot-password" className="text-indigo-400 hover:text-indigo-300 transition">Forgot password?</Link>
-          <p>Don't have an account? <Link href="/register" className="text-indigo-400 hover:text-indigo-300 transition">Sign up</Link></p>
+          <Link href="/forgot-password" className="text-gold-400 hover:text-gold-300 transition">Forgot password?</Link>
+          <p>Don't have an account? <Link href="/register" className="text-gold-400 hover:text-gold-300 transition">Sign up</Link></p>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <Spinner size="h-8 w-8" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

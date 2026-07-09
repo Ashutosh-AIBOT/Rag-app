@@ -71,10 +71,10 @@ const CHUNKING_STRATEGIES = [
 const PIPELINE_STEPS = [
   { step: "1", title: "Document Upload", description: "Upload PDF, TXT, DOCX, or Markdown files with custom tags", color: "bg-emerald-500" },
   { step: "2", title: "Chunking", description: "5 strategies: recursive, semantic, parent-child, section, multi-vector", color: "bg-blue-500" },
-  { step: "3", title: "Indexing", description: "ChromaDB vectors + BM25 inverted index with user-level isolation", color: "bg-violet-500" },
+  { step: "3", title: "Indexing", description: "ChromaDB vectors + BM25 inverted index with user-level isolation", color: "bg-emerald-500" },
   { step: "4", title: "Query & Retrieval", description: "10 strategies with query transformation and metadata filtering", color: "bg-amber-500" },
   { step: "5", title: "Re-Ranking", description: "Cross-encoder precision reranking for top results", color: "bg-rose-500" },
-  { step: "6", title: "Generation", description: "LLM synthesis with source citations and confidence scores", color: "bg-indigo-500" },
+  { step: "6", title: "Generation", description: "LLM synthesis with source citations and confidence scores", color: "bg-gold-500" },
 ];
 
 function AnimatedCounter({ target, label }: { target: number; label: string }) {
@@ -109,8 +109,8 @@ export default function LandingPage() {
   const [health, setHealth] = useState<any>(null);
 
   useEffect(() => {
-    api.stats().then(setStats).catch(() => {});
-    api.health().then(setHealth).catch(() => {});
+    api.stats().then(setStats).catch(() => setStats(null));
+    api.health().then(setHealth).catch(() => setHealth(null));
   }, []);
 
   return (
@@ -129,7 +129,7 @@ export default function LandingPage() {
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight">
             <span className="bg-gradient-to-r from-zinc-50 via-zinc-100 to-zinc-300 bg-clip-text text-transparent">Advanced </span>
-            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-indigo-400 bg-clip-text text-transparent">RAG Engine</span>
+            <span className="bg-gradient-to-r from-gold-400 via-emerald-400 to-gold-400 bg-clip-text text-transparent">RAG Engine</span>
           </h1>
 
           <p className="text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
@@ -137,7 +137,7 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/register" className="px-8 py-3 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/20 active:scale-[0.98] transition-all">
+            <Link href="/register" className="px-8 py-3 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-gold-500 to-emerald-600 hover:from-gold-600 hover:to-emerald-700 shadow-lg shadow-gold-500/20 active:scale-[0.98] transition-all">
               Get Started Free
             </Link>
             <Link href="/login" className="px-8 py-3 rounded-lg text-sm font-medium text-zinc-300 border border-zinc-700 hover:border-zinc-500 hover:text-white transition-all">
@@ -154,7 +154,7 @@ export default function LandingPage() {
           <AnimatedCounter target={stats?.total_documents || 0} label="Documents Indexed" />
           <AnimatedCounter target={Math.round(stats?.avg_latency_ms || 0)} label="Avg Latency (ms)" />
           <div className="text-center">
-            <div className="text-3xl font-bold text-white truncate">{health?.llm?.active_provider || "LLM"}</div>
+            <div className="text-3xl font-bold text-white truncate">{health?.llm?.mode || "LLM"}</div>
             <div className="text-xs text-zinc-400 mt-1">Active Provider</div>
           </div>
         </div>
@@ -171,7 +171,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((f) => (
               <div key={f.title} className="group p-6 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-900 transition-all duration-200">
-                <div className="h-10 w-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-4 group-hover:bg-indigo-500/20 transition-colors">
+                <div className="h-10 w-10 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-400 mb-4 group-hover:bg-gold-500/20 transition-colors">
                   {f.icon}
                 </div>
                 <h3 className="text-sm font-semibold text-white mb-2">{f.title}</h3>
@@ -223,7 +223,7 @@ export default function LandingPage() {
             {CHUNKING_STRATEGIES.map((s, i) => (
               <div key={s.name} className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 transition-all">
                 <div className="flex items-start gap-4">
-                  <div className="h-8 w-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 text-xs font-bold shrink-0">
+                  <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xs font-bold shrink-0">
                     {i + 1}
                   </div>
                   <div>
@@ -258,8 +258,8 @@ export default function LandingPage() {
               { name: "Auto", desc: "Picks the best strategy automatically based on query shape." },
               { name: "Multi-Vector", desc: "Indexes summaries + hypothetical questions per chunk." },
             ].map((s) => (
-              <div key={s.name} className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:border-indigo-500/30 transition-all">
-                <h3 className="text-sm font-semibold text-indigo-400">{s.name}</h3>
+              <div key={s.name} className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:border-gold-500/30 transition-all">
+                <h3 className="text-sm font-semibold text-gold-400">{s.name}</h3>
                 <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">{s.desc}</p>
               </div>
             ))}
@@ -273,7 +273,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-white">Ready to explore?</h2>
           <p className="text-zinc-400">Start building production-grade RAG pipelines in minutes. Free to get started.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/register" className="px-8 py-3 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/20 active:scale-[0.98] transition-all">
+            <Link href="/register" className="px-8 py-3 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-gold-500 to-emerald-600 hover:from-gold-600 hover:to-emerald-700 shadow-lg shadow-gold-500/20 active:scale-[0.98] transition-all">
               Create Free Account
             </Link>
             <Link href="/login" className="px-8 py-3 rounded-lg text-sm font-medium text-zinc-300 border border-zinc-700 hover:border-zinc-500 hover:text-white transition-all">
@@ -287,7 +287,7 @@ export default function LandingPage() {
       <footer className="border-t border-zinc-800/50 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-md bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center">
+            <div className="h-6 w-6 rounded-md bg-gradient-to-tr from-gold-500 to-emerald-600 flex items-center justify-center">
               <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>

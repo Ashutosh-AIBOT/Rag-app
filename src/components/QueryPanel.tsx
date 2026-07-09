@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import StrategySelector from "./StrategySelector";
 import MetadataFilters from "./MetadataFilters";
 import Toggle from "./ui/Toggle";
@@ -25,7 +25,7 @@ function WeightSlider({
           step={0.05}
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="flex-1 accent-indigo-500 cursor-pointer"
+          className="flex-1 accent-gold-500 cursor-pointer"
         />
         <span className="text-xs font-mono font-medium text-zinc-300 w-24 text-right shrink-0">
           {Math.round(value * 100)}% Semantic
@@ -42,7 +42,7 @@ function StreamingOutput({ answer, loading }: { answer: string; loading: boolean
       <div className="label">Streaming Output</div>
       <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 text-sm font-mono text-zinc-300 whitespace-pre-wrap leading-relaxed shadow-inner max-h-60 overflow-y-auto">
         {answer}
-        {loading && <span className="inline-block w-1.5 h-4 bg-indigo-500 animate-pulse ml-0.5 align-middle" />}
+        {loading && <span className="inline-block w-1.5 h-4 bg-gold-500 animate-pulse ml-0.5 align-middle" />}
       </div>
     </div>
   );
@@ -76,7 +76,7 @@ export default function QueryPanel({
   prefill?: { query: string; strategy: string; filters?: Filters } | null;
   onPrefillClear?: () => void;
 }) {
-  const [query, setQuery] = useState("What error code is returned when the API rate limit is exceeded?");
+  const [query, setQuery] = useState("");
   const [strategy, setStrategy] = useState("hybrid_rerank");
   const [filters, setFilters] = useState<Filters>({});
   const [semanticWeight, setSemanticWeight] = useState(0.7);
@@ -87,24 +87,6 @@ export default function QueryPanel({
   const [streamingAnswer, setStreamingAnswer] = useState("");
   const pushHistory = useAppStore((s) => s.pushHistory);
   const selectedSources = useAppStore((s) => s.selectedSources);
-  const setSelectedSources = useAppStore((s) => s.setSelectedSources);
-  const isInitialized = useRef(false);
-
-  useEffect(() => {
-    if (!isInitialized.current && selectedSources.length === 0) {
-      isInitialized.current = true;
-      api.listDocuments()
-        .then((data) => {
-          const ready = data.filter((d) => d.status === "ready").map((d) => d.filename);
-          if (ready.length > 0) {
-            setSelectedSources(ready);
-          }
-        })
-        .catch((err) => {
-          console.error("Failed to auto-select documents:", err);
-        });
-    }
-  }, [selectedSources.length, setSelectedSources]);
 
   useEffect(() => {
     if (prefill) {

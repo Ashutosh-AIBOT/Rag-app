@@ -22,14 +22,14 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2.5">
-          <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/20">
+          <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-gold-500 to-emerald-600 shadow-lg shadow-gold-500/20">
             <svg className="h-4.5 w-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
-            <div className="absolute inset-0 rounded-lg bg-indigo-400 opacity-0 blur transition-opacity duration-300 hover:opacity-40" />
+            <div className="absolute inset-0 rounded-lg bg-gold-400 opacity-0 blur transition-opacity duration-300 hover:opacity-40" />
           </div>
           <span className="font-semibold tracking-tight text-white bg-gradient-to-r from-zinc-50 via-zinc-100 to-zinc-300 bg-clip-text text-transparent">RAG.Engine</span>
-          <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] font-medium text-indigo-400 border border-zinc-700/50">v2.0</span>
+          <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] font-medium text-gold-400 border border-zinc-700/50">v2.0</span>
         </Link>
 
         {/* Logged-in: app nav */}
@@ -58,7 +58,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {user ? (
             <Link href="/settings" className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 hover:text-zinc-100 hover:border-zinc-700 transition">
-              <div className="h-5 w-5 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-[10px] font-bold text-indigo-400">
+              <div className="h-5 w-5 rounded-full bg-gold-500/20 border border-gold-500/30 flex items-center justify-center text-[10px] font-bold text-gold-400">
                 {user.email?.[0]?.toUpperCase() || "U"}
               </div>
               <span className="font-medium max-w-[100px] truncate">{user.full_name || user.email}</span>
@@ -68,7 +68,7 @@ export default function Navbar() {
               <Link href="/login" className="px-4 py-2 text-sm font-medium text-zinc-300 hover:text-white transition-all">
                 Sign In
               </Link>
-              <Link href="/register" className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/20 active:scale-[0.98] transition-all">
+              <Link href="/register" className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-gold-500 to-emerald-600 hover:from-gold-600 hover:to-emerald-700 shadow-lg shadow-gold-500/20 active:scale-[0.98] transition-all">
                 Get Started
               </Link>
             </div>
@@ -89,17 +89,17 @@ export default function Navbar() {
               {appNavItems.map((item) => {
                 const isActive = pathname === item.href;
                 return (
-                  <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)} className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${isActive ? "text-white bg-zinc-900 border border-zinc-800" : "text-zinc-400 hover:text-zinc-150 hover:bg-zinc-900/40"}`}>
+                  <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)} className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${isActive ? "text-white bg-zinc-900 border border-zinc-800" : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40"}`}>
                     {item.label}
                   </Link>
                 );
               })}
-              <Link href="/settings" onClick={() => setIsOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-zinc-400 hover:text-zinc-150 hover:bg-zinc-900/40 rounded-lg transition-all">Settings</Link>
+              <Link href="/settings" onClick={() => setIsOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40 rounded-lg transition-all">Settings</Link>
             </>
           ) : (
             <>
               <Link href="/login" onClick={() => setIsOpen(false)} className="block px-4 py-2.5 text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/40 rounded-lg transition-all">Sign In</Link>
-              <Link href="/register" onClick={() => setIsOpen(false)} className="block px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 rounded-lg text-center">Get Started</Link>
+              <Link href="/register" onClick={() => setIsOpen(false)} className="block px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-gold-500 to-emerald-600 rounded-lg text-center">Get Started</Link>
             </>
           )}
         </div>

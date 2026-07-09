@@ -30,15 +30,15 @@ export default function ForgotPasswordPage() {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
         <div className="card p-8 w-full max-w-md text-center space-y-4">
-          <div className="w-12 h-12 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto">
-            <svg className="h-6 w-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+          <div className="w-12 h-12 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center mx-auto">
+            <svg className="h-6 w-6 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
           </div>
           <h2 className="text-lg font-bold text-zinc-100">Password Reset Request</h2>
           <p className="text-xs text-zinc-400">Password reset token generated successfully (SMTP/email is disabled).</p>
           {resetData?.token_debug && (
             <div className="p-4 bg-zinc-800/80 rounded-lg border border-zinc-700 text-left space-y-2">
               <p className="text-xs font-semibold text-zinc-300">Demo Mode Reset Details:</p>
-              <div className="text-[11px] font-mono bg-zinc-950 p-2 rounded text-indigo-400 select-all break-all">
+              <div className="text-[11px] font-mono bg-zinc-950 p-2 rounded text-gold-400 select-all break-all">
                 Token: {resetData.token_debug}
               </div>
               <Link 
@@ -77,7 +77,7 @@ export default function ForgotPasswordPage() {
         </form>
 
         <p className="text-center text-xs text-zinc-500">
-          Remember your password? <Link href="/login" className="text-indigo-400 hover:text-indigo-300 transition">Sign in</Link>
+          Remember your password? <Link href="/login" className="text-gold-400 hover:text-gold-300 transition">Sign in</Link>
         </p>
       </div>
     </div>

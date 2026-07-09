@@ -6,15 +6,15 @@ import Badge from "./ui/Badge";
 
 function scoreBadgeVariant(score?: number): "green" | "amber" | "rose" {
   if (score === undefined || score === null) return "amber";
-  if (score >= 0.66) return "green";
-  if (score >= 0.33) return "amber";
+  if (score >= 0.75) return "green";
+  if (score >= 0.5) return "amber";
   return "rose";
 }
 
 function scoreTextColor(score?: number): string {
   if (score === undefined || score === null) return "text-amber-400";
-  if (score >= 0.66) return "text-emerald-400";
-  if (score >= 0.33) return "text-amber-400";
+  if (score >= 0.75) return "text-emerald-400";
+  if (score >= 0.5) return "text-amber-400";
   return "text-rose-400";
 }
 
@@ -37,7 +37,7 @@ function ScoreGrid({ c }: { c: ChunkScore }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
       {scores.map(({ label, value, raw }) => (
-        <div key={label} className="bg-zinc-900 border border-zinc-850 p-2.5 rounded-lg">
+        <div key={label} className="bg-zinc-900 border border-zinc-800/70 p-2.5 rounded-lg">
           <div className="label">{label}</div>
           <div className={`font-mono text-sm font-semibold mt-0.5 ${
             raw ? "text-zinc-300" : scoreTextColor(value as number)
@@ -58,7 +58,7 @@ function ViewToggle({ mode, onChange }: { mode: "child" | "parent"; onChange: (m
           key={m}
           onClick={() => onChange(m)}
           className={`px-2 py-0.5 rounded text-[9px] uppercase font-bold tracking-wider transition-all ${
-            mode === m ? "bg-indigo-600 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
+            mode === m ? "bg-gold-600 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
           }`}
         >
           {m === "child" ? "Match (Child)" : "Context (Parent)"}
@@ -112,7 +112,7 @@ export default function ChunkInspector({
             key={key}
             ref={(el) => { refs.current[key] = el; }}
             className={`border rounded-xl bg-zinc-900 overflow-hidden transition-all duration-200 ${
-              isHighlighted ? "border-indigo-500 ring-2 ring-indigo-500/20"
+              isHighlighted ? "border-gold-500 ring-2 ring-gold-500/20"
               : isOverlap ? "border-amber-500/40 bg-amber-500/[0.02]"
               : "border-zinc-800 hover:border-zinc-700"
             }`}
@@ -123,7 +123,7 @@ export default function ChunkInspector({
             >
               <div className="flex-1 min-w-0 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/25">
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-gold-500/10 text-gold-400 border border-gold-500/25">
                     #{finalRank}
                   </span>
                   <span className="text-xs font-medium text-zinc-400 truncate max-w-[200px]" title={c.source}>
@@ -132,7 +132,7 @@ export default function ChunkInspector({
                   {c.section && (
                     <Badge variant="default">{c.section}</Badge>
                   )}
-                  <Badge variant="indigo">{c.strategy}</Badge>
+                  <Badge variant="gold">{c.strategy}</Badge>
                   {c.token_count != null && <Badge variant="default">{c.token_count} tok</Badge>}
                   {isOverlap && <Badge variant="amber">Shared</Badge>}
                 </div>
@@ -164,7 +164,7 @@ export default function ChunkInspector({
                     <div className="label">{c.child_text ? "Context Expansion" : "Full Chunk Text"}</div>
                     {c.child_text && <ViewToggle mode={viewMode[key] || "parent"} onChange={(m) => setViewMode((prev) => ({ ...prev, [key]: m }))} />}
                   </div>
-                  <div className="bg-zinc-950 border border-zinc-850 rounded-lg p-4 font-mono text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed shadow-inner">
+                  <div className="bg-zinc-950 border border-zinc-800/70 rounded-lg p-4 font-mono text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed shadow-inner">
                     {c.child_text && viewMode[key] === "child" ? c.child_text : c.text}
                   </div>
                 </div>

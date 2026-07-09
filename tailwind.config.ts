@@ -12,12 +12,18 @@ const config: Config = {
         mono: ["var(--font-mono)", "monospace"],
       },
       colors: {
-        brand: {
-          50: "#eef2ff",
-          100: "#e0e7ff",
-          500: "#6366f1",
-          600: "#4f46e5",
-          700: "#4338ca",
+        // Premium gold accent — replaces the old indigo brand scale.
+        gold: {
+          50: "#fdf9ec",
+          100: "#f9f0cf",
+          200: "#f1dd9c",
+          300: "#e8c765",
+          400: "#dcb13f",
+          500: "#c9992a",
+          600: "#a97b1f",
+          700: "#8a611c",
+          800: "#6f4d1c",
+          900: "#5c401c",
         },
       },
       animation: {

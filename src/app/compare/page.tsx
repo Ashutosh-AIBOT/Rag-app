@@ -65,7 +65,7 @@ export default function ComparePage() {
         </div>
 
         <label className="flex items-center gap-2.5 text-xs text-zinc-300 border-t border-zinc-800 pt-4 cursor-pointer select-none">
-          <input type="checkbox" checked={scoreQuality} onChange={(e) => setScoreQuality(e.target.checked)} className="w-4 h-4 rounded text-indigo-600 bg-zinc-900 border-zinc-700 focus:ring-indigo-500/50" />
+          <input type="checkbox" checked={scoreQuality} onChange={(e) => setScoreQuality(e.target.checked)} className="w-4 h-4 rounded text-gold-600 bg-zinc-900 border-zinc-700 focus:ring-gold-500/50" />
           <span>Evaluate Answer Quality (adds latency)</span>
         </label>
 

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Spinner from "@/components/ui/Spinner";
-import { API_URL } from "@/lib/api";
+import { api } from "@/lib/api";
 
 export default function EmbeddingsPage() {
   const [text, setText] = useState("The quick brown fox jumps over the lazy dog");
@@ -15,13 +15,8 @@ export default function EmbeddingsPage() {
     if (!text.trim()) return;
     setLoading(true); setError("");
     try {
-      const res = await fetch(`${API_URL}/api/embeddings/compare`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, model_a: modelA, model_b: modelB }),
-      });
-      if (!res.ok) throw new Error("Comparison failed");
-      setResults(await res.json());
+      const data = await api.compareEmbeddings({ text, model_a: modelA, model_b: modelB });
+      setResults(data);
     } catch (err: any) {
       setError(err.message);
     } finally {

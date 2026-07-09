@@ -3,7 +3,7 @@ import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Spinner from "@/components/ui/Spinner";
-import { API_URL } from "@/lib/api";
+import { api } from "@/lib/api";
 
 function VerifyOtpContent() {
   const searchParams = useSearchParams();
@@ -17,12 +17,7 @@ function VerifyOtpContent() {
     e.preventDefault();
     setLoading(true); setError("");
     try {
-      const res = await fetch(`${API_URL}/api/auth/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
-      });
-      if (!res.ok) throw new Error("Invalid OTP code");
+      await api.verifyOtp(email, otp);
       setSuccess(true);
     } catch (err: any) {
       setError(err.message);

@@ -19,27 +19,27 @@ type OverlapData = {
 };
 
 const STRATEGY_COLORS: Record<string, string> = {
-  recursive: "bg-indigo-500",
+  recursive: "bg-gold-500",
   semantic: "bg-emerald-500",
   parent_child: "bg-amber-500",
   section: "bg-rose-500",
-  multi_vector: "bg-violet-500",
+  multi_vector: "bg-emerald-500",
 };
 
 const STRATEGY_BORDER: Record<string, string> = {
-  recursive: "border-indigo-500/50",
+  recursive: "border-gold-500/50",
   semantic: "border-emerald-500/50",
   parent_child: "border-amber-500/50",
   section: "border-rose-500/50",
-  multi_vector: "border-violet-500/50",
+  multi_vector: "border-emerald-500/50",
 };
 
 const STRATEGY_TEXT: Record<string, string> = {
-  recursive: "text-indigo-400",
+  recursive: "text-gold-400",
   semantic: "text-emerald-400",
   parent_child: "text-amber-400",
   section: "text-rose-400",
-  multi_vector: "text-violet-400",
+  multi_vector: "text-emerald-400",
 };
 
 export default function ChunkOverlapViewer({ docId, filename }: { docId: string; filename: string }) {

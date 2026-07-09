@@ -1,10 +1,10 @@
-type BadgeVariant = "green" | "amber" | "rose" | "indigo" | "default";
+type BadgeVariant = "green" | "amber" | "rose" | "gold" | "default";
 
 const styles: Record<BadgeVariant, string> = {
   green: "badge-green",
   amber: "badge-amber",
   rose: "badge-rose",
-  indigo: "badge-indigo",
+  gold: "badge-gold",
   default: "badge bg-zinc-800 border border-zinc-700 text-zinc-400",
 };
 
