@@ -125,29 +125,78 @@ export default function QueryPanel({
         let inputTokens = 0;
         let outputTokens = 0;
 
-        await streamQuery(basePayload, {
-          onChunks: (chunks) => {
-            chunksSoFar = chunks as unknown as ChunkScore[];
-            onResult({
-              query_id: "stream",
-              query,
-              strategy,
-              answer: "",
-              chunks: chunksSoFar,
-              pipeline: [],
-              input_tokens: 0,
-              output_tokens: 0,
-              latency_ms: 0,
-            });
-          },
-          onToken: (token) => { answerSoFar += token; setStreamingAnswer(answerSoFar); },
-          onDone: async (info) => {
-            queryId = info.query_id;
-            inputTokens = info.input_tokens || 0;
-            outputTokens = info.output_tokens || 0;
-          },
-          onError: (err) => setError(err.message),
-        });
+        // Typewriter queue variables
+        let tokenQueue: string[] = [];
+        let displayAnswer = "";
+        let isDone = false;
+        let isProcessing = true;
+
+        const processQueue = () => {
+          if (!isProcessing) return;
+          if (tokenQueue.length > 0) {
+            const nextToken = tokenQueue.shift();
+            if (nextToken) {
+              displayAnswer += nextToken;
+              setStreamingAnswer(displayAnswer);
+            }
+            // If queue is building up, consume tokens faster (5ms), otherwise slow down (25ms)
+            const speed = tokenQueue.length > 8 ? 5 : 25;
+            setTimeout(processQueue, speed);
+          } else {
+            if (isDone) {
+              setStreamingAnswer(answerSoFar);
+              isProcessing = false;
+            } else {
+              // Wait and check again
+              setTimeout(processQueue, 30);
+            }
+          }
+        };
+
+        // Start processing queue
+        setTimeout(processQueue, 25);
+
+        try {
+          await streamQuery(basePayload, {
+            onChunks: (chunks) => {
+              chunksSoFar = chunks as unknown as ChunkScore[];
+              onResult({
+                query_id: "stream",
+                query,
+                strategy,
+                answer: "",
+                chunks: chunksSoFar,
+                pipeline: [],
+                input_tokens: 0,
+                output_tokens: 0,
+                latency_ms: 0,
+              });
+            },
+            onToken: (token) => {
+              answerSoFar += token;
+              tokenQueue.push(token);
+            },
+            onDone: async (info) => {
+              queryId = info.query_id;
+              inputTokens = info.input_tokens || 0;
+              outputTokens = info.output_tokens || 0;
+              isDone = true;
+            },
+            onError: (err) => {
+              setError(err.message);
+              isDone = true;
+            },
+          });
+        } catch (streamErr) {
+          isDone = true;
+          isProcessing = false;
+          throw streamErr;
+        }
+
+        // Wait until queue is fully drained before completing runQuery
+        while (isProcessing) {
+          await new Promise((resolve) => setTimeout(resolve, 50));
+        }
 
         let pipeline: QueryResponse["pipeline"] = [];
         if (queryId) {
