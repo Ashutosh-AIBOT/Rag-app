@@ -181,7 +181,8 @@ export default function DocumentList() {
   const refresh = () => api.listDocuments().then((data) => {
     setDocs(data);
     setDocsLoading(false);
-    if (!isInitialized.current && selectedSources.length === 0 && data.length > 0) {
+    const currentSelected = useAppStore.getState().selectedSources;
+    if (!isInitialized.current && currentSelected.length === 0 && data.length > 0) {
       const ready = data.filter((d) => d.status === "ready").map((d) => d.filename);
       if (ready.length > 0) { setSelectedSources(ready); }
       isInitialized.current = true;
