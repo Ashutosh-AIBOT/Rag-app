@@ -57,8 +57,8 @@ export default function RegisterPage() {
     const trimmedEmail = email.trim();
 
     // 1. Full name validation
-    if (trimmedName.length < 2) {
-      showError("Full name must be at least 2 characters long");
+    if (trimmedName.length < 4) {
+      showError("Full name must be at least 4 characters long");
       return;
     }
 
