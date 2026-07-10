@@ -14,8 +14,35 @@ export default function ChangePasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) { setError("Passwords do not match"); return; }
-    setLoading(true); setError("");
+    setError("");
+
+    if (newPassword.length < 8) {
+      setError("New password must be at least 8 characters long");
+      return;
+    }
+    if (!/[A-Z]/.test(newPassword)) {
+      setError("New password must contain at least one uppercase letter");
+      return;
+    }
+    if (!/[a-z]/.test(newPassword)) {
+      setError("New password must contain at least one lowercase letter");
+      return;
+    }
+    if (!/[0-9]/.test(newPassword)) {
+      setError("New password must contain at least one number");
+      return;
+    }
+    if (!/[^A-Za-z0-9]/.test(newPassword)) {
+      setError("New password must contain at least one special character");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
     try {
       await changePassword(currentPassword, newPassword);
       setSuccess(true);

@@ -14,9 +14,23 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true); setError("");
+    setError("");
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setError("Email address is required");
+      return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    setLoading(true);
     try {
-      const data = await requestPasswordReset(email);
+      const data = await requestPasswordReset(trimmedEmail);
       setResetData(data);
       setSent(true);
     } catch (err: any) {

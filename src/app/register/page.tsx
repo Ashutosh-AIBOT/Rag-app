@@ -53,16 +53,74 @@ export default function RegisterPage() {
     setError("");
     if (errorTimeout) clearTimeout(errorTimeout);
 
+    const trimmedName = fullName.trim();
+    const trimmedEmail = email.trim();
+
     // 1. Full name validation
-    if (fullName.trim().length < 2) {
+    if (trimmedName.length < 2) {
       showError("Full name must be at least 2 characters long");
       return;
     }
 
     // 2. Email validation
+    if (!trimmedEmail) {
+      showError("Email address is required");
+      return;
+    }
+
+    if (/\s/.test(trimmedEmail)) {
+      showError("Email address cannot contain spaces");
+      return;
+    }
+
+    // Prevents consecutive symbols/dots
+    if (
+      trimmedEmail.includes("..") ||
+      trimmedEmail.includes("__") ||
+      trimmedEmail.includes("--") ||
+      trimmedEmail.includes("@.") ||
+      trimmedEmail.includes(".@")
+    ) {
+      showError("Email contains invalid character sequences");
+      return;
+    }
+
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-      showError("Please enter a valid email address");
+    if (!emailRegex.test(trimmedEmail)) {
+      showError("Please enter a valid email address (e.g., name@domain.com)");
+      return;
+    }
+
+    const parts = trimmedEmail.split("@");
+    const localPart = parts[0]?.toLowerCase() || "";
+    const domainPart = parts[1]?.toLowerCase() || "";
+
+    // Reject common disposable/temp email domains
+    const disposableDomains = [
+      "mailinator.com", "yopmail.com", "trashmail.com", "tempmail.com",
+      "10minutemail.com", "dispostable.com", "guerrillamail.com", "sharklasers.com",
+      "getairmail.com", "burnercmail.com", "temp-mail.org", "fakeinbox.com",
+      "mailnesia.com", "maildrop.cc", "throwawaymail.com", "generator.email",
+      "tempmailaddress.com", "smartemail.com"
+    ];
+    if (disposableDomains.includes(domainPart)) {
+      showError("Disposable/temporary email addresses are not allowed");
+      return;
+    }
+
+    // Reject obvious fake/dummy placeholder emails
+    const blockedEmails = [
+      "test@test.com", "admin@admin.com", "fake@fake.com", "dummy@dummy.com",
+      "me@me.com", "a@a.com", "user@user.com", "noreply@example.com", "no-reply@example.com"
+    ];
+    if (blockedEmails.includes(trimmedEmail.toLowerCase())) {
+      showError("Please use a real, personal email address");
+      return;
+    }
+
+    const dummyPrefixes = ["test", "fake", "dummy", "admin", "asd", "asdf", "qwerty", "user", "noreply", "no-reply"];
+    if (dummyPrefixes.includes(localPart) && (domainPart === "test.com" || domainPart === "example.com" || domainPart === "fake.com" || domainPart === "dummy.com" || domainPart === "admin.com")) {
+      showError("Please use a real, personal email address");
       return;
     }
 
@@ -96,7 +154,7 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      await register(email, password, fullName);
+      await register(trimmedEmail, password, trimmedName);
       setSuccess(true);
     } catch (err: any) {
       showError(err.message);
